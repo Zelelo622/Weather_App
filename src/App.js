@@ -1,30 +1,36 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+import startBg from "./assets/startBg.jpg"
+import sumBg from "./assets/summer/sunset.jpg";
+import winBg from "./assets/winter/sunset.jpg";
+
 function App() {
   const [data, setData] = useState({});
   const [location, setLocation] = useState('');
+  const [bg, setBg] = useState(startBg);
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&lang=ru&appid=${process.env.REACT_APP_WEATHER_API_KEY}`;
 
   const searchLocation = (event) => {
     if (event.key === 'Enter') {
       axios.get(url).then((response) => {
+        if (response.data.main.temp < 9) setBg(winBg);
+        else setBg(sumBg);
         setData(response.data);
-        // console.log(response.data);
       });
       setLocation('');
     }
   }
 
   return (
-    <div className="app">
+    <div className="app" style={{background: `url(${bg}) no-repeat center center/cover`}}>
       <div className="search">
         <input
           value={location}
           onChange={event => setLocation(event.target.value)}
           placeholder="Введите локацию"
-          onKeyPress={searchLocation}
+          onKeyDown={searchLocation}
           type="text" />
       </div>
       <div className="container">
